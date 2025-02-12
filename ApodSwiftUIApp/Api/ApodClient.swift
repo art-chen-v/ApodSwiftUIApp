@@ -16,6 +16,7 @@ actor ApodClient {
     private lazy var decoder: JSONDecoder = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         let aDecoder = JSONDecoder()
         aDecoder.dateDecodingStrategy = .formatted(dateFormatter)
         return aDecoder
