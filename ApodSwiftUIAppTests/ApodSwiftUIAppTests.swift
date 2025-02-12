@@ -14,10 +14,6 @@ final class ApodSwiftUIAppTests: XCTestCase {
         let apiClient = ApodClient(downloader: TestDownloader())
         let apod = try await apiClient.fetchLatestApod()
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
         if let date = dateFormatter.date(from: "2025-02-11") {
             XCTAssertEqual(apod.date, date)
         } else {
@@ -26,10 +22,6 @@ final class ApodSwiftUIAppTests: XCTestCase {
     }
     
     func testApiClientDoesFetchMultipleApodData() async throws {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
         let apiClient = ApodClient(downloader: TestDownloader())
         
         if let earlierDate = dateFormatter.date(from: "2025-02-01"),

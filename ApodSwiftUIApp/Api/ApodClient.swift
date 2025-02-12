@@ -14,9 +14,6 @@ actor ApodClient {
     private let baseURL = "https://api.nasa.gov/planetary/apod"
 
     private lazy var decoder: JSONDecoder = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         let aDecoder = JSONDecoder()
         aDecoder.dateDecodingStrategy = .formatted(dateFormatter)
         return aDecoder
@@ -44,8 +41,6 @@ actor ApodClient {
             throw URLError(.badURL)
         }
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
         let earlierDateStr = dateFormatter.string(from: earlierDate)
         let latestDateStr = dateFormatter.string(from: latestDate)
         
