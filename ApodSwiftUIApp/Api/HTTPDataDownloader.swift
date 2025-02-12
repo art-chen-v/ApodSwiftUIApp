@@ -10,7 +10,7 @@ import Foundation
 let validStatus = 200...299
 
 protocol HTTPDataDownloader {
-    func httpData(from: URL) async throws -> Data
+    func httpData(from url: URL) async throws -> Data
 }
 
 extension URLSession: HTTPDataDownloader {
