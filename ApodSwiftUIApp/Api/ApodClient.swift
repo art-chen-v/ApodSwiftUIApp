@@ -14,7 +14,10 @@ actor ApodClient {
     private let baseURL = "https://api.nasa.gov/planetary/apod"
 
     private lazy var decoder: JSONDecoder = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
         let aDecoder = JSONDecoder()
+        aDecoder.dateDecodingStrategy = .formatted(dateFormatter)
         return aDecoder
     }()
     
@@ -31,10 +34,7 @@ actor ApodClient {
             throw URLError(.badURL)
         }
         let data = try await downloader.httpData(from: url)
-        let apods = try decoder.decode([Apod].self, from: data)
-        guard let latestApod = apods.first else {
-            throw ApodError.missingData
-        }
+        let latestApod = try decoder.decode(Apod.self, from: data)
         return latestApod
     }
     
