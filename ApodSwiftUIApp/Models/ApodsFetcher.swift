@@ -44,19 +44,3 @@ actor ApodsFetcher {
         self.latestDate = latestDate
     }
 }
-
-enum DateError: Error {
-    case invalidDateCalculation
-}
-
-extension Date {
-    func minusDays(_ days: Int) throws -> Date {
-        let calendar = Calendar.current
-
-        guard let newDate = calendar.date(byAdding: .day, value: -days, to: self) else {
-            throw DateError.invalidDateCalculation
-        }
-        
-        return newDate
-    }
-}
