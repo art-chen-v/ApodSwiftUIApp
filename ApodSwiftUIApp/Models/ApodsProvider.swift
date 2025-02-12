@@ -12,11 +12,9 @@ class ApodsProvider: ObservableObject {
     
     @Published var apods: [Apod] = []
     
-    private let apiClient: ApodClient
     private var apodsFetcher: ApodsFetcher
     
-    init(apiClient: ApodClient = ApodClient(), apodsFetcher: ApodsFetcher = ApodsFetcher()) {
-        self.apiClient = apiClient
+    init(apodsFetcher: ApodsFetcher = ApodsFetcher()) {
         self.apodsFetcher = apodsFetcher
     }
     
