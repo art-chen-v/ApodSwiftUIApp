@@ -10,9 +10,17 @@ import SwiftUI
 struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
     
+    let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    
     var body: some View {
         NavigationStack {
-            
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 5) {
+                    ForEach(apodsProvider.apods) { item in
+                        ApodCell(apod: item)
+                    }
+                }
+            }
         }
         .task {
             try? await apodsProvider.fetchApods()
