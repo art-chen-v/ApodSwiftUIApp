@@ -16,7 +16,6 @@ struct Apod {
     let serviceVersion: String?
     let title: String
     let url: URL
-    
 }
 
 extension Apod: Identifiable {
