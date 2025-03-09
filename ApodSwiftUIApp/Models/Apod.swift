@@ -22,6 +22,9 @@ extension Apod: Identifiable {
     var id: Date { date }
 }
 
+extension Apod: Equatable {
+}
+
 extension Apod: Decodable {
     private enum CodingKeys: String, CodingKey {
         case copyright
