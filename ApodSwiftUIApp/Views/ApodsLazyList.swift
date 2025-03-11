@@ -16,6 +16,20 @@ struct OffsetPreferenceKey: PreferenceKey {
     }
 }
 
+extension View {
+    func onOffsetChanged(action: @escaping (_ offset: CGFloat) -> Void) -> some View {
+        self.background(alignment: .center) {
+            GeometryReader { geo in
+                Color.clear
+                    .preference(key: OffsetPreferenceKey.self, value: geo.frame(in: .global).maxY)
+                    .onPreferenceChange(OffsetPreferenceKey.self, perform: { value in
+                        action(value)
+                    })
+            }
+        }
+    }
+}
+
 struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
     
