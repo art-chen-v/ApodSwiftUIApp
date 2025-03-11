@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ApodCellViewOffsetPreferenceKey: PreferenceKey {
+struct OffsetPreferenceKey: PreferenceKey {
     
     static var defaultValue: CGFloat = 0
     
