@@ -19,7 +19,7 @@ class ApodsProvider: ObservableObject {
     }
     
     func fetchApods() async throws {
-        let fetchedApods = try await apodsFetcher.fetchApods(for: 10)
+        let fetchedApods = try await apodsFetcher.fetchApods(for: 10).reversed()
         apods.append(contentsOf: fetchedApods)
     }
 }
