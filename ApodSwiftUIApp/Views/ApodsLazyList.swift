@@ -33,20 +33,50 @@ extension View {
 struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
     
+    @State private var isLoadingMore: Bool = false
+    
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 5) {
-                    ForEach(apodsProvider.apods) { item in
-                        ApodCell(apod: item)
+            GeometryReader { scrollViewGeo in
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 5) {
+                        ForEach(apodsProvider.apods) { item in
+                            ApodCell(apod: item)
+                                .onOffsetChanged { value in
+                                    loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
+                                                                scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                                }
+                        }
+                    }
+                    if isLoadingMore {
+                        ProgressView("Loading more...")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .padding(.vertical)
                     }
                 }
             }
         }
         .task {
             try? await apodsProvider.fetchApods()
+        }
+    }
+    
+    private func loadMoreIfNeeded(currentItem: Apod,
+                                  lastItemMaxY: CGFloat,
+                                  scrollViewMaxY: CGFloat) {
+        if currentItem == self.apodsProvider.apods.last {
+            if lastItemMaxY - 100 < scrollViewMaxY {
+                if !isLoadingMore {
+                    isLoadingMore = true
+                    Task {
+                        try? await apodsProvider.fetchApods()
+                        isLoadingMore = false
+                    }
+                }
+            }
         }
     }
 }
