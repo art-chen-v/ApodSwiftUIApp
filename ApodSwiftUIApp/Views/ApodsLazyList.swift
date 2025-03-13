@@ -34,6 +34,7 @@ struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
     
     @State private var isLoadingMore: Bool = false
+    @State private var isLoadingMoreFailed: Bool = false
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -50,10 +51,18 @@ struct ApodsLazyList: View {
                                 }
                         }
                     }
+                    if isLoadingMoreFailed {
+                        Button("", systemImage: "arrow.trianglehead.clockwise") {
+                            loadMore()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+                        .padding()
+                    }
                     if isLoadingMore {
                         ProgressView("Loading more...")
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(height: 60)
                             .padding(.vertical)
                     }
                 }
@@ -69,12 +78,22 @@ struct ApodsLazyList: View {
                                   scrollViewMaxY: CGFloat) {
         if currentItem == self.apodsProvider.apods.last {
             if lastItemMaxY - 100 < scrollViewMaxY {
-                if !isLoadingMore {
+                loadMore()
+            }
+        }
+    }
+    
+    private func loadMore() {
+        if !isLoadingMore {
+            Task {
+                do {
                     isLoadingMore = true
-                    Task {
-                        try? await apodsProvider.fetchApods()
-                        isLoadingMore = false
-                    }
+                    isLoadingMoreFailed = false
+                    try await apodsProvider.fetchApods()
+                    isLoadingMore = false
+                } catch {
+                    isLoadingMoreFailed = true
+                    isLoadingMore = false
                 }
             }
         }
