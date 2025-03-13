@@ -33,8 +33,9 @@ extension View {
 struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
     
-    @State private var isLoadingMore: Bool = false
-    @State private var isLoadingMoreFailed: Bool = false
+    @State private var isLoadMore: Bool = false
+    @State private var isLoadMoreFailed: Bool = false
+    @State private var isPagingMode = false
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -46,54 +47,75 @@ struct ApodsLazyList: View {
                         ForEach(apodsProvider.apods) { item in
                             ApodCell(apod: item)
                                 .onOffsetChanged { value in
-                                    loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
-                                                                scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                                    Task {
+                                        await loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
+                                                                    scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                                    }
                                 }
                         }
                     }
-                    if isLoadingMoreFailed {
-                        Button("", systemImage: "arrow.trianglehead.clockwise") {
-                            loadMore()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 60)
-                        .padding()
-                    }
-                    if isLoadingMore {
-                        ProgressView("Loading more...")
+                    if isPagingMode {
+                        if isLoadMoreFailed {
+                            Button("", systemImage: "arrow.trianglehead.clockwise") {
+                                Task {
+                                    await loadData()
+                                }
+                            }
                             .frame(maxWidth: .infinity)
                             .frame(height: 60)
-                            .padding(.vertical)
+                            .padding()
+                        }
+                        if isLoadMore {
+                            ProgressView("Loading more...")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 60)
+                                .padding(.vertical)
+                        }
                     }
+                }
+                .overlay(alignment: .center) {
+                    if !isPagingMode {
+                        if isLoadMoreFailed {
+                            Button("", systemImage: "arrow.trianglehead.clockwise") {
+                                Task {
+                                    await loadData()
+                                }
+                            }
+                        }
+                        if isLoadMore {
+                            ProgressView()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
+
                 }
             }
         }
         .task {
-            try? await apodsProvider.fetchApods()
+            await loadData()
+        }
+    }
+    
+    private func loadData() async {
+        do {
+            isLoadMore = true
+            isLoadMoreFailed = false
+            try await apodsProvider.fetchApods()
+            isLoadMore = false
+            isPagingMode = true
+        } catch {
+            isLoadMore = false
+            isLoadMoreFailed = true
         }
     }
     
     private func loadMoreIfNeeded(currentItem: Apod,
                                   lastItemMaxY: CGFloat,
-                                  scrollViewMaxY: CGFloat) {
+                                  scrollViewMaxY: CGFloat) async {
         if currentItem == self.apodsProvider.apods.last {
             if lastItemMaxY - 100 < scrollViewMaxY {
-                loadMore()
-            }
-        }
-    }
-    
-    private func loadMore() {
-        if !isLoadingMore {
-            Task {
-                do {
-                    isLoadingMore = true
-                    isLoadingMoreFailed = false
-                    try await apodsProvider.fetchApods()
-                    isLoadingMore = false
-                } catch {
-                    isLoadingMoreFailed = true
-                    isLoadingMore = false
+                if !isLoadMore {
+                    await loadData()
                 }
             }
         }
