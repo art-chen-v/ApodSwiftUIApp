@@ -27,7 +27,9 @@ actor ApodClient {
         guard var urlComponents = URLComponents(string: baseURL) else {
             throw URLError(.badURL)
         }
-        urlComponents.queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
+        // Uncomment this line to use real api key
+        // urlComponents.queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
+        urlComponents.queryItems = [URLQueryItem(name: "api_key", value: "DEMO_KEY")]
         guard let url = urlComponents.url else {
             throw URLError(.badURL)
         }
