@@ -12,7 +12,13 @@ struct ApodCell: View {
     
     var body: some View {
         AsyncImage(url: apod.url) { image in
-            image.resizable()
+            Rectangle()
+                .overlay {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                }
+                .clipped()
         } placeholder: {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
