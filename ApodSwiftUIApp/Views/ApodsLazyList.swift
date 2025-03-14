@@ -45,13 +45,15 @@ struct ApodsLazyList: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 5) {
                         ForEach(apodsProvider.apods) { item in
-                            ApodCell(apod: item)
-                                .onOffsetChanged { value in
-                                    Task {
-                                        await loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
-                                                                    scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                            NavigationLink(destination: ApodView(apod: item)) {
+                                ApodCell(apod: item)
+                                    .onOffsetChanged { value in
+                                        Task {
+                                            await loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
+                                                                        scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
                     if isPagingMode {
