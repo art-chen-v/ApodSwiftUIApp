@@ -125,8 +125,5 @@ struct ApodsLazyList: View {
 }
 
 #Preview {
-    let apiClient = ApodClient(downloader: TestDownloader())
-    let apodsFetcher = ApodsFetcher(apiClient: apiClient)
-    let apodsProvider = ApodsProvider(apodsFetcher: apodsFetcher)
-    ApodsLazyList(apodsProvider: apodsProvider)
+    ApodsLazyList(apodsProvider: ApodsProvider())
 }
