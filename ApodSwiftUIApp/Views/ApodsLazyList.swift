@@ -56,6 +56,7 @@ struct ApodsLazyList: View {
                             }
                         }
                     }
+                    .navigationTitle("Apods")
                     if isPagingMode {
                         if isLoadMoreFailed {
                             Button("", systemImage: "arrow.trianglehead.clockwise") {
