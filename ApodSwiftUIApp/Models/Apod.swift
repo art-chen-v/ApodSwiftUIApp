@@ -56,7 +56,7 @@ extension Apod: Decodable {
             throw ApodError.missingData
         }
         
-        self.copyright = rawCopyright
+        self.copyright = rawCopyright?.replacingOccurrences(of: "\n", with: "")
         self.date = date
         self.explanation = explanation
         self.hdUrl = rawHdUrl
