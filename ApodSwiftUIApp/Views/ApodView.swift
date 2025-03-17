@@ -28,6 +28,11 @@ struct ApodView: View {
                 }
                 .padding(.horizontal, 8)
             }
+            .toolbar {
+                if let url = apod.hdUrl {
+                    ShareLink(item: url)
+                }
+            }
         }
     }
 }
