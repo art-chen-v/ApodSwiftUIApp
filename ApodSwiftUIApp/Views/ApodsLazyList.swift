@@ -32,6 +32,7 @@ extension View {
 
 struct ApodsLazyList: View {
     @StateObject var apodsProvider = ApodsProvider()
+    @StateObject var networkMonitor = NetworkMonitor()
     
     @State private var isLoadMore: Bool = false
     @State private var isLoadMoreFailed: Bool = false
@@ -67,6 +68,13 @@ struct ApodsLazyList: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 60)
                             .padding()
+                            .onChange(of: networkMonitor.hasNetworkConnection) { newValue in
+                                if newValue {
+                                    Task {
+                                        await loadData()
+                                    }
+                                }
+                            }
                         }
                         if isLoadMore {
                             ProgressView("Loading more...")
