@@ -117,7 +117,7 @@ struct ApodsLazyList: View {
                                   scrollViewMaxY: CGFloat) async {
         if currentItem == self.apodsProvider.apods.last {
             if lastItemMaxY - 100 < scrollViewMaxY {
-                if !isLoadMore {
+                if !isLoadMore && !isLoadMoreFailed {
                     await loadData()
                 }
             }
