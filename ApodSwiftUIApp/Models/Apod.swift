@@ -10,12 +10,12 @@ import Foundation
 struct Apod {
     let copyright: String?
     let date: Date
-    let explanation: String
+    let explanation: String?
     let hdUrl: URL?
     let mediaType: String?
     let serviceVersion: String?
-    let title: String
-    let url: URL
+    let title: String?
+    let url: URL?
 }
 
 extension Apod: Identifiable {
@@ -48,21 +48,17 @@ extension Apod: Decodable {
         let rawTitle = try? values.decode(String.self, forKey: .title)
         let rawUrl = try? values.decode(URL.self, forKey: .url)
         
-        guard let date = rawDate,
-              let explanation = rawExplanation,
-              let title = rawTitle,
-              let url = rawUrl
-        else {
+        guard let date = rawDate else {
             throw ApodError.missingData
         }
         
         self.copyright = rawCopyright?.replacingOccurrences(of: "\n", with: "")
         self.date = date
-        self.explanation = explanation
+        self.explanation = rawExplanation
         self.hdUrl = rawHdUrl
         self.mediaType = rawMediaType
         self.serviceVersion = rawServiceVersion
-        self.title = title
-        self.url = url
+        self.title = rawTitle
+        self.url = rawUrl
     }
 }
