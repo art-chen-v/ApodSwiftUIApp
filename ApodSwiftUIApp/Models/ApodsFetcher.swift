@@ -27,13 +27,6 @@ actor ApodsFetcher {
         return apods
     }
     
-    private func fetchApods(from laterDate: Date, for numberOfDays: Int) async throws -> [Apod] {
-        let earlierDate = try laterDate.minusDays(numberOfDays)
-        try updateLatestDate(earlierDate)
-        let apods = try await apiClient.fetchApods(from: earlierDate, to: laterDate)
-        return apods
-    }
-    
     private func updateLatestDate(_ date: Date) throws {
         self.latestDate = try date.minusDays(1)
     }
