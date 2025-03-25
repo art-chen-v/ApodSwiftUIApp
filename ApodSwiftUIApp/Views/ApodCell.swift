@@ -9,21 +9,34 @@ import SwiftUI
 
 struct ApodCell: View {
     let apod: Apod
+    @StateObject private var apodImageProvider = ApodImageProvider()
     
     var body: some View {
-        AsyncImage(url: apod.url) { image in
+        VStack {
             Rectangle()
                 .overlay {
-                    image
-                        .resizable()
-                        .scaledToFill()
+                    if let apodImage = apodImageProvider.apodImage {
+                        Image(uiImage: apodImage)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Color.blue
+                    }
                 }
                 .clipped()
-        } placeholder: {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .aspectRatio(1, contentMode: .fill)
+        .task {
+            await loadImage()
+        }
+    }
+    
+    private func loadImage() async {
+        do {
+            try await apodImageProvider.loadImage(from: apod.url)
+        } catch {
+            print("Error loading image: \(error)")
+        }
     }
 }
 
