@@ -13,7 +13,7 @@ struct ApodView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                ApodViewHeader(apod: apod)
+                ApodCell(apod: apod, isHeader: true)
                 Group {
                     if let copyright = apod.copyright {
                         Text(copyright)
@@ -22,9 +22,13 @@ struct ApodView: View {
                     Text(apod.date.formatted(date: .abbreviated, time: .omitted))
                         .font(.title2)
                         .fontWeight(.medium)
-                    Text(apod.title)
-                        .font(.headline)
-                    Text(apod.explanation)
+                    if let title = apod.title {
+                        Text(title)
+                            .font(.headline)
+                    }
+                    if let descr = apod.explanation {
+                        Text(descr)
+                    }
                 }
                 .padding(.horizontal, 8)
             }

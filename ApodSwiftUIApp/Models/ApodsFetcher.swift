@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 actor ApodsFetcher {
     var latestDate: Date?
     let apiClient: ApodClient

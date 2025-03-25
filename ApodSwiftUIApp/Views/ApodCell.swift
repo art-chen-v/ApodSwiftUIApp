@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ApodCell: View {
     let apod: Apod
+    var isHeader: Bool = false
+    
     @StateObject private var apodImageProvider = ApodImageProvider()
     
     var body: some View {
@@ -25,7 +27,7 @@ struct ApodCell: View {
                 }
                 .clipped()
         }
-        .aspectRatio(1, contentMode: .fill)
+        .aspectRatio(isHeader ? 4/3 : 1, contentMode: .fill)
         .task {
             await loadImage()
         }
