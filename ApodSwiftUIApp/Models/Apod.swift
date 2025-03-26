@@ -16,6 +16,7 @@ struct Apod {
     let serviceVersion: String?
     let title: String?
     let url: URL?
+    let thumbnailUrl: URL?
 }
 
 extension Apod: Identifiable {
@@ -35,6 +36,7 @@ extension Apod: Decodable {
         case serviceVersion = "service_version"
         case title
         case url
+        case thumbnailUrl = "thumbnail_url"
     }
     
     init(from decoder: Decoder) throws {
@@ -47,6 +49,7 @@ extension Apod: Decodable {
         let rawServiceVersion = try? values.decode(String.self, forKey: .serviceVersion)
         let rawTitle = try? values.decode(String.self, forKey: .title)
         let rawUrl = try? values.decode(URL.self, forKey: .url)
+        let rawThumbnailUrl = try? values.decode(URL.self, forKey: .thumbnailUrl)
         
         guard let date = rawDate else {
             throw ApodError.missingData
@@ -60,5 +63,6 @@ extension Apod: Decodable {
         self.serviceVersion = rawServiceVersion
         self.title = rawTitle
         self.url = rawUrl
+        self.thumbnailUrl = rawThumbnailUrl
     }
 }

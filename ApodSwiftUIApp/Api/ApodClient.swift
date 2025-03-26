@@ -49,7 +49,8 @@ actor ApodClient {
         let parameters: [String: String] = [
             "api_key": apiKey,
             "start_date": earlierDateStr,
-            "end_date": latestDateStr
+            "end_date": latestDateStr,
+            "thumbs": "true"
         ]
         
         urlComponents.queryItems = parameters.map { key, value in

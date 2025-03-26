@@ -35,7 +35,11 @@ struct ApodCell: View {
     
     private func loadImage() async {
         do {
-            try await apodImageProvider.loadImage(from: apod.url)
+            if let mediaType = apod.mediaType, mediaType == "video" {
+                try await apodImageProvider.loadImage(from: apod.thumbnailUrl)
+            } else {
+                try await apodImageProvider.loadImage(from: apod.url)
+            }
         } catch {
             print("Error loading image: \(error)")
         }
