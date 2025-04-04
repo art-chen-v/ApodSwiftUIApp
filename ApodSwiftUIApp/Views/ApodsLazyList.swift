@@ -57,8 +57,8 @@ struct ApodsLazyList: View {
                                 ApodCell(apod: item)
                                     .onOffsetChanged(isLastItem: item == apodsProvider.apods.last) { value in
                                         Task {
-                                            await loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
-                                                                        scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
+                                            await loadMoreIfNeeded(lastItemMaxY: value,
+                                                                   scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
                                         }
                                     }
                             }
@@ -127,8 +127,7 @@ struct ApodsLazyList: View {
         }
     }
     
-    private func loadMoreIfNeeded(currentItem: Apod,
-                                  lastItemMaxY: CGFloat,
+    private func loadMoreIfNeeded(lastItemMaxY: CGFloat,
                                   scrollViewMaxY: CGFloat) async {
         if lastItemMaxY - 100 < scrollViewMaxY {
             if !isLoadMore && !isLoadMoreFailed {
