@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+var lastValue: CGFloat = 0
+
 struct OffsetPreferenceKey: PreferenceKey {
     
     static var defaultValue: CGFloat = 0
@@ -17,14 +19,19 @@ struct OffsetPreferenceKey: PreferenceKey {
 }
 
 extension View {
-    func onOffsetChanged(action: @escaping (_ offset: CGFloat) -> Void) -> some View {
+    func onOffsetChanged(isLastItem: Bool, action: @escaping (_ offset: CGFloat) -> Void) -> some View {
         self.background(alignment: .center) {
-            GeometryReader { geo in
-                Color.clear
-                    .preference(key: OffsetPreferenceKey.self, value: geo.frame(in: .global).maxY)
-                    .onPreferenceChange(OffsetPreferenceKey.self, perform: { value in
-                        action(value)
-                    })
+            if isLastItem {
+                GeometryReader { geo in
+                    Color.clear
+                        .preference(key: OffsetPreferenceKey.self, value: geo.frame(in: .global).maxY)
+                        .onPreferenceChange(OffsetPreferenceKey.self, perform: { value in
+                            if abs(lastValue - value) > 100 {
+                                lastValue = value
+                                action(value)
+                            }
+                        })
+                }
             }
         }
     }
@@ -48,7 +55,7 @@ struct ApodsLazyList: View {
                         ForEach(apodsProvider.apods) { item in
                             NavigationLink(destination: ApodView(apod: item)) {
                                 ApodCell(apod: item)
-                                    .onOffsetChanged { value in
+                                    .onOffsetChanged(isLastItem: item == apodsProvider.apods.last) { value in
                                         Task {
                                             await loadMoreIfNeeded(currentItem: item, lastItemMaxY: value,
                                                                         scrollViewMaxY: scrollViewGeo.frame(in: .global).maxY)
@@ -123,11 +130,9 @@ struct ApodsLazyList: View {
     private func loadMoreIfNeeded(currentItem: Apod,
                                   lastItemMaxY: CGFloat,
                                   scrollViewMaxY: CGFloat) async {
-        if currentItem == self.apodsProvider.apods.last {
-            if lastItemMaxY - 100 < scrollViewMaxY {
-                if !isLoadMore && !isLoadMoreFailed {
-                    await loadData()
-                }
+        if lastItemMaxY - 100 < scrollViewMaxY {
+            if !isLoadMore && !isLoadMoreFailed {
+                await loadData()
             }
         }
     }
